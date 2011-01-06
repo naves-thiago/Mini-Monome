@@ -7,6 +7,7 @@ local a = 1
 local b = 1
 local c = 1
 local d = 1
+local e = 1
 local tmp
 
 while ( true ) do 
@@ -47,6 +48,16 @@ while ( true ) do
       midi.send_note_on( 1, 67, 64 )
     else
       midi.send_note_off( 1, 67, 64 )
+    end
+  end
+
+  tmp = pio.pin.getval( brd.BTN_SELECT )
+  if ( tmp ~= e ) then
+    e = tmp
+    if ( e == 0 ) then
+      midi.send_note_on( 1, 68, 64 )
+    else
+      midi.send_note_off( 1, 68, 64 )
     end
   end
 
