@@ -1,0 +1,10 @@
+Live:
+
+Live sends the status of the clips:
+The message sent in the same channel and note used to trigger the clip.
+The velocity is listed below:
+
+Note ON: 126 -> Waiting to play
+Note ON: 127 -> Started to play
+Note ON: 1   -> Started to repeat
+Note OFF: 0  -> Stopped	
