@@ -3,6 +3,7 @@ midi = require( "eluamidi" )
 
 -- Configure P13 to UART
 mbed.pio.configpin( mbed.pio.P13, 1, 0, 0 )
+mbed.pio.configpin( mbed.pio.P14, 1, 0, 0 )
 
 -- Initialize midi
 midi.init( 1 )
@@ -50,7 +51,7 @@ end
 while ( true ) do 
   for i=0,3  do
     -- Get button state
-  --  term.print( btn_pin[i] .. "")
+    --  term.print( btn_pin[i] .. "")
     tmp = pio.pin.getval( btn_pin[i] )
 
     -- State changed ?
@@ -62,33 +63,46 @@ while ( true ) do
         midi.send_note_on( 1, btn_note[i], 64 )
       else
         midi.send_note_off( 1, btn_note[i], 64 )
-      end
-    end
-  end
+      end -- if
+    end -- if
+  end -- For
 
   -- Debounce
-  tmr.delay( 2, 500 )
+--  tmr.delay( 2, 500 )
 
-  -- Look for a midi message
+  -- Look for a midi message ( timeout used as debounce for the buttons )
   if ( midi.receive( 500, 2 ) == midi.defs[ "msg_new_message" ] ) then
     code = midi.message[ midi.defs[ "msg_code" ] ]
     note = midi.message[ midi.defs[ "msg_data" ] ]
     vel  = midi.message[ midi.defs[ "msg_data2" ] ]
 
+--[[
+    if ( vel == nil ) then
+      vel = -1
+    end
+
+    if ( note == nil ) then
+      note = -1
+    end
+
+    print( code .."\t".. note.."\t"..vel )
+--]]
+
     if (( code == midi.defs[ "note_on" ] ) and ( vel == 127 )) then
       for i=0,3 do
-        if ( code == btn_note[i] ) then
+        if ( note == btn_note[i] ) then
           pio.pin.sethigh( btn_led[i] )
-        end
-      end
-    end
+        end -- if
+      end -- for
+    end -- if
 
     if (( code == midi.defs[ "note_off" ] ) and ( vel == 0 )) then
       for i=0,3 do
-        if ( code == btn_note[i] ) then
+        if ( note == btn_note[i] ) then
           pio.pin.setlow( btn_led[i] )
-        end
-      end
-    end
-end
+        end -- if
+      end -- for
+    end -- if
+  end -- if new message
+end -- While
 
